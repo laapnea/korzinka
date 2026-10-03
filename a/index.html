@@ -228,6 +228,38 @@ svg{display:block}
 .menu .rs{display:block;font-size:14px;font-weight:600;color:var(--muted);margin-top:2px}
 .menu .chev{margin-left:auto;flex:none}
 
+/* checkout */
+.co-sec{margin:0 20px 18px}
+#co-body{padding-top:8px}
+.co-h{font-size:18px;font-weight:800;letter-spacing:-.2px;margin-bottom:10px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#fff;border-radius:16px;margin-bottom:10px;box-shadow:0 3px 12px rgba(20,40,80,.05)}
+.seg2 button{height:44px;border-radius:12px;font-size:16px;font-weight:800;color:var(--muted);text-align:center}
+.seg2 button[aria-pressed="true"]{background:var(--brand);color:#fff}
+.co-card{display:flex;gap:12px;align-items:center;background:#fff;border-radius:18px;padding:14px;box-shadow:0 3px 12px rgba(20,40,80,.04)}
+.co-card .ai{width:44px;height:44px;border-radius:14px;background:var(--brand-l);display:flex;align-items:center;justify-content:center;flex:none}
+.co-card .at{font-size:16px;font-weight:800}
+.co-card .as{font-size:14px;color:var(--muted);margin-top:3px;line-height:1.4;font-weight:600}
+.co-sec .chips{padding:0;margin:0}
+.chip2.on{background:var(--brand);color:#fff}
+.co-sec .menu{margin:0}
+.radio{width:24px;height:24px;border-radius:50%;border:2px solid #C5CEDC;flex:none}
+.radio.on{border:7px solid var(--brand)}
+.co-sec + .total{margin-top:0}
+.co-note{font-size:14px;color:var(--muted);text-align:center;margin:12px 34px 0;line-height:1.4;font-weight:600}
+.done-wrap{position:absolute;left:0;right:0;top:var(--top);bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 20px 40px;gap:10px}
+.done-wrap .ok{width:104px;height:104px;border-radius:50%;background:linear-gradient(150deg,#6CC4FF,var(--brand));display:flex;align-items:center;justify-content:center;box-shadow:0 18px 32px -14px rgba(25,80,180,.65);margin-bottom:10px}
+.done-wrap .et{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.done-wrap .es{font-size:16px;color:var(--muted);font-weight:600;line-height:1.45}
+.done-wrap .co-card{width:350px;text-align:left;margin:10px 0 6px}
+.done-wrap .btn{margin-top:4px}
+.screen .btn.ghost{background:#fff;color:var(--brand-dd);box-shadow:inset 0 0 0 2px var(--brand-l)}
+.order{background:#fff;border-radius:20px;margin:0 20px 10px;padding:16px;box-shadow:0 3px 12px rgba(20,40,80,.04)}
+.order .oh{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:17px;font-weight:800}
+.order .st{font-size:14px;font-weight:800;color:#1B7A3E;background:#E3F5E9;border-radius:8px;padding:3px 8px;flex:none}
+.order .os{font-size:15px;color:var(--muted);margin-top:6px;line-height:1.4;font-weight:600}
+.order .oi{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.order .oi span{width:46px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+
 /* help */
 .faq details{background:#fff;border-radius:20px;margin:0 20px 8px;padding:15px 16px;box-shadow:0 3px 12px rgba(20,40,80,.04)}
 .faq summary{font-size:16px;font-weight:800;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px;line-height:1.35}
@@ -713,6 +745,8 @@ body.bare .screen button{-webkit-user-select:none;user-select:none}
   </symbol>
 
   <!-- small UI icons -->
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-clock2" viewBox="0 0 24 24"><circle cx="12" cy="12.5" r="8.5" fill="none" stroke="#1E6BD6" stroke-width="2.3"/><path d="M12 8v5l3 2" fill="none" stroke="#1E6BD6" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
   <symbol id="i-plusd" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="#98A2B3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -972,7 +1006,12 @@ profile: () => `<div class="sp"></div>${nav('Профиль', 'none')}
   ${tabbar('profile')}`,
 
 orders: () => `<div class="sp"></div>${nav('Мои заказы', 'none')}
-  <div class="empty"><div class="eic">${u('i-box',48,48)}</div><div class="et">Заказов пока нет</div><div class="es">Здесь появятся ваши покупки в магазинах и в приложении</div><button type="button" class="btn" data-act="tab-catalog">Перейти в каталог</button></div>`,
+  <div class="scroll" id="orders-body"></div>`,
+
+checkout: () => `<div class="sp"></div>${nav('Оформление заказа', 'none')}
+  <div class="scroll" id="co-body"></div>`,
+
+done: () => `<div class="sp"></div><div class="done-wrap" id="done-body"></div>`,
 
 address: () => `<div class="sp"></div>${nav('Адреса доставки', 'none')}
   <div class="scroll">
@@ -990,7 +1029,8 @@ help: () => `<div class="sp"></div>${nav('Помощь', 'none')}
 
 /* ---------- build the phone ---------- */
 const TITLES = { main: 'Главная', rules: 'Правила игры', game: 'Игра', catalog: 'Каталог', category: 'Категория', search: 'Поиск',
-  notif: 'Уведомления', cart: 'Корзина', profile: 'Профиль', orders: 'Мои заказы', address: 'Адреса доставки', help: 'Помощь' };
+  notif: 'Уведомления', cart: 'Корзина', profile: 'Профиль', orders: 'Мои заказы', address: 'Адреса доставки', help: 'Помощь',
+  checkout: 'Оформление заказа', done: 'Заказ оформлен' };
 const EXTRA = { rules: 's-rules', game: 's-end', catalog: 'has-tabs', cart: 'has-tabs', profile: 'has-tabs' };
 const screenEl = $('#screen');
 const VIEW_KEYS = Object.keys(VIEWS).filter(k => CFG.game || (k !== 'rules' && k !== 'game'));
@@ -1000,7 +1040,7 @@ screenEl.innerHTML = VIEW_KEYS.map(k =>
 
 const game = $('#v-game'), garden = $('#garden'), waterBtn = $('#water');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const state = { hv: START.hv, tr: START.tr, busy: false, cart: {} };
+const state = { hv: START.hv, tr: START.tr, busy: false, cart: {}, orders: [], co: { mode: 'delivery', slot: 0, pay: 0 } };
 let gen = 0;   // растет при сбросе, чтобы таймеры прерванного полива не меняли новую игру
 let stack = ['main'];
 
@@ -1122,7 +1162,7 @@ function paintBadges() {
   $$('.tab .badge').forEach(b => { b.hidden = n === 0; b.textContent = n > 99 ? '99+' : n; });
 }
 function renderCart() {
-  const items = Object.entries(state.cart).filter(([, q]) => q > 0).map(([id, q]) => ({ p: BY_ID[id], q }));
+  const items = cartItems();
   const body = $('#cart-body');
   if (!items.length) {
     body.innerHTML = `<div class="empty"><div class="eic">${u('t-cart',48,48,'style="color:#1E6BD6"')}</div><div class="et">В корзине пока пусто</div><div class="es">Добавляйте товары кнопкой «+» в каталоге и в подборках</div><button type="button" class="btn" data-act="tab-catalog">Перейти в каталог</button></div>`;
@@ -1134,6 +1174,54 @@ function renderCart() {
       <div class="step"><button type="button" data-act="dec" data-id="${p.id}" aria-label="Убрать одну штуку: ${p.name}">${u('i-minus',18,18)}</button><b>${q}</b><button type="button" data-act="inc" data-id="${p.id}" aria-label="Добавить еще одну: ${p.name}">${u('i-plusd',18,18)}</button></div></div>`).join('')
     + `<div class="total"><div><span>Товары, ${n} шт.</span><span>${rub(sum)}</span></div><div><span>Доставка</span><span>Бесплатно</span></div><div class="sum"><span>Итого</span><span>${rub(sum)}</span></div></div>
        <button type="button" class="btn wide" data-act="checkout">Оформить заказ</button>`;
+}
+const cartItems = () => Object.entries(state.cart).filter(([, q]) => q > 0).map(([id, q]) => ({ p: BY_ID[id], q }));
+const SLOTS = { delivery: ['Сегодня, 18:00–19:00', 'Сегодня, 20:00–21:00', 'Завтра, 10:00–11:00'],
+                pickup:   ['Через час', 'Сегодня к 19:00', 'Завтра к 10:00'] };
+const PAYS = ['Картой при получении', 'Наличными при получении', 'По QR-коду при получении'];
+const PLACE = { delivery: ['ул. Лесная, 8, кв. 14', 'Курьер позвонит за 15 минут'],
+                pickup:   ['Магазин у дома', 'ул. Садовая, 12 · с 8:00 до 23:00'] };
+function renderCheckout() {
+  const items = cartItems(), body = $('#co-body'), co = state.co;
+  if (!items.length) { body.innerHTML = ''; return; }
+  const sum = items.reduce((a, { p, q }) => a + p.price * q, 0), n = cartCount();
+  body.innerHTML = `<div class="co-sec"><div class="co-h">Как получить</div>
+      <div class="seg2">${[['delivery', 'Доставка'], ['pickup', 'Самовывоз']].map(([v, t]) => `<button type="button" data-act="co-mode" data-v="${v}" aria-pressed="${co.mode === v}">${t}</button>`).join('')}</div>
+      <div class="co-card"><span class="ai">${u('i-pin',22,22)}</span><div><div class="at">${PLACE[co.mode][0]}</div><div class="as">${PLACE[co.mode][1]}</div></div></div></div>
+    <div class="co-sec"><div class="co-h">Когда</div><div class="chips">${SLOTS[co.mode].map((t, i) => `<button type="button" class="chip2${i === co.slot ? ' on' : ''}" data-act="co-slot" data-v="${i}" aria-pressed="${i === co.slot}">${t}</button>`).join('')}</div></div>
+    <div class="co-sec"><div class="co-h">Оплата</div><div class="menu" role="radiogroup" aria-label="Оплата">${PAYS.map((t, i) => `<button type="button" class="row" role="radio" aria-checked="${i === co.pay}" data-act="co-pay" data-v="${i}"><span class="radio${i === co.pay ? ' on' : ''}"></span><span>${t}</span></button>`).join('')}</div></div>
+    <div class="total"><div><span>Товары, ${n}\u00a0шт.</span><span>${rub(sum)}</span></div><div><span>${co.mode === 'delivery' ? 'Доставка' : 'Самовывоз'}</span><span>Бесплатно</span></div><div class="sum"><span>Итого</span><span>${rub(sum)}</span></div></div>
+    <button type="button" class="btn wide" data-act="co-confirm" id="co-confirm">Подтвердить заказ</button>
+    <p class="co-note">Оплата при получении. Заказ можно отменить в «Моих заказах», пока его не начали собирать.</p>`;
+}
+function confirmOrder(btn) {
+  if (btn.disabled) return;
+  btn.disabled = true; btn.textContent = 'Оформляем…';
+  setTimeout(() => {
+    const items = cartItems(), co = state.co;
+    const order = { no: 4821 + state.orders.length, items: items.map(({ p, q }) => [p.id, q]),
+      n: cartCount(), sum: items.reduce((a, { p, q }) => a + p.price * q, 0),
+      mode: co.mode, slot: SLOTS[co.mode][co.slot], pay: PAYS[co.pay] };
+    state.orders.unshift(order);
+    state.cart = {}; paintBadges(); renderCart();
+    $('#done-body').innerHTML = `<div class="ok">${u('i-check',52,52)}</div>
+      <div class="et">Заказ оформлен!</div>
+      <div class="es">Номер заказа №\u00a0${order.no}</div>
+      <div class="co-card"><span class="ai">${u('i-clock2',22,22)}</span><div><div class="at">${order.slot}</div><div class="as">${order.mode === 'delivery' ? 'Доставка: ' + PLACE.delivery[0] : 'Самовывоз: ' + PLACE.pickup[1].split(' · ')[0]}<br>${order.pay}</div></div></div>
+      <button type="button" class="btn" data-act="my-orders">Мои заказы</button>
+      <button type="button" class="btn ghost" data-act="tab-main">На главную</button>`;
+    stack = ['done']; show('done', 'fwd');
+  }, reduce ? 0 : 900);
+}
+function renderOrders() {
+  const body = $('#orders-body');
+  if (!state.orders.length) {
+    body.innerHTML = `<div class="empty"><div class="eic">${u('i-box',48,48)}</div><div class="et">Заказов пока нет</div><div class="es">Здесь появятся ваши покупки в магазинах и в приложении</div><button type="button" class="btn" data-act="tab-catalog">Перейти в каталог</button></div>`;
+    return;
+  }
+  body.innerHTML = state.orders.map(o => `<div class="order"><div class="oh"><span>Заказ №\u00a0${o.no}</span><span class="st">Собирается</span></div>
+    <div class="os">${o.slot} · ${o.mode === 'delivery' ? 'доставка' : 'самовывоз'}<br>${o.n}\u00a0${plural(o.n, 'товар', 'товара', 'товаров')} на ${rub(o.sum)} · ${o.pay[0].toLowerCase() + o.pay.slice(1)}</div>
+    <div class="oi">${o.items.slice(0, 6).map(([id]) => `<span style="background:${BY_ID[id].bg}">${img(BY_ID[id], 40, 32)}</span>`).join('')}</div></div>`).join('');
 }
 function addToCart(id, d = 1) {
   state.cart[id] = Math.max(0, (state.cart[id] || 0) + d);
@@ -1147,11 +1235,11 @@ function applyTexts() { $$('[data-diff]').forEach(e => { e.textContent = CFG[e.d
 
 /* ---------- actions ---------- */
 const ACTIONS = {
+  back,
   play: () => push('rules'),
   start: () => push('game'),
   garden: () => push('game'),
   info: () => stack[stack.length - 1] === 'rules' ? toast('Это и есть правила игры') : push('rules'),
-  back,
   water,
   catalog: () => push('catalog'),
   cat: el => openCategory(el.dataset.cat),
@@ -1162,11 +1250,16 @@ const ACTIONS = {
   add: el => { addToCart(el.dataset.id); toast('Добавлено в корзину'); },
   inc: el => addToCart(el.dataset.id, 1),
   dec: el => addToCart(el.dataset.id, -1),
-  checkout: () => toast('Оформление заказа в прототипе недоступно'),
+  checkout: () => { state.co = { mode: 'delivery', slot: 0, pay: 0 }; renderCheckout(); $('#co-body').scrollTop = 0; push('checkout'); },
+  'co-mode': el => { state.co.mode = el.dataset.v; state.co.slot = 0; renderCheckout(); },
+  'co-slot': el => { state.co.slot = +el.dataset.v; renderCheckout(); },
+  'co-pay': el => { state.co.pay = +el.dataset.v; renderCheckout(); },
+  'co-confirm': el => confirmOrder(el),
+  'my-orders': () => { renderOrders(); stack = ['profile', 'orders']; show('orders', 'fwd'); },
   search: () => openSearch(),
   chip: el => { $('#q').value = el.dataset.q; renderSearch(); },
   bell: () => push('notif'),
-  orders: () => push('orders'),
+  orders: () => { renderOrders(); push('orders'); },
   address: () => push('address'),
   addaddr: () => toast('Добавление адреса в прототипе недоступно'),
   help: () => push('help')
@@ -1202,13 +1295,14 @@ function start(data) {
   applyTexts();
   if (typeof data.hv === 'number') { state.hv = data.hv; state.tr = data.tr; }
   if (data.cart && typeof data.cart === 'object') state.cart = { ...data.cart };
-  paintCounters(false); setSpent(state.tr === 0); paintBadges(); renderCart(); renderSearch();
-  const known = Array.isArray(data.stack) ? data.stack.filter(id => VIEWS[id] && id !== 'category') : [];
+  if (Array.isArray(data.orders)) state.orders = data.orders.filter(o => o && Array.isArray(o.items));
+  paintCounters(false); setSpent(state.tr === 0); paintBadges(); renderCart(); renderSearch(); renderOrders();
+  const known = Array.isArray(data.stack) ? data.stack.filter(id => VIEW_KEYS.includes(id) && !['category', 'checkout', 'done'].includes(id)) : [];
   stack = known.length ? known : ['main'];
   show(stack[stack.length - 1], 'none');
   fit();
 }
-window.claude?.hot?.snapshot?.(() => ({ hv: state.hv, tr: state.tr, cart: { ...state.cart }, stack: [...stack] }));
+window.claude?.hot?.snapshot?.(() => ({ hv: state.hv, tr: state.tr, cart: { ...state.cart }, orders: state.orders, stack: [...stack] }));
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 </script>
 
