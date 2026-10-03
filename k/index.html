@@ -295,15 +295,15 @@ svg{display:block}
 .bump{animation:bump .45s ease-out}
 @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
 .bar i{transition:width .6s cubic-bezier(.2,.8,.2,1)}
-.screen .btn[disabled]{cursor:default;filter:saturate(.85)}
+.screen .btn[disabled],.screen .btn[aria-disabled="true"]{cursor:default;filter:saturate(.85)}
 
 /* attempts are over */
 .view .veil{top:calc(var(--top) + 52px)}
 .view .modal{top:calc(var(--top) + 158px)}
-.view .veil{opacity:0;pointer-events:none;transition:opacity .35s ease}
-.view .modal{opacity:0;pointer-events:none;transform:translateY(18px) scale(.96);transition:opacity .3s ease,transform .38s cubic-bezier(.2,.9,.25,1.2)}
-.view.spent .veil{opacity:1;pointer-events:auto}
-.view.spent .modal{opacity:1;pointer-events:auto;transform:none}
+.view .veil{opacity:0;pointer-events:none;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s}
+.view .modal{opacity:0;pointer-events:none;visibility:hidden;transform:translateY(18px) scale(.96);transition:opacity .3s ease,transform .38s cubic-bezier(.2,.9,.25,1.2),visibility 0s linear .38s}
+.view.spent .veil{opacity:1;pointer-events:auto;visibility:inherit;transition-delay:0s}
+.view.spent .modal{opacity:1;pointer-events:auto;visibility:inherit;transform:none;transition-delay:0s}
 .screen .modal .btn{width:100%}
 
 .toast{position:absolute;left:50%;bottom:112px;z-index:70;transform:translate(-50%,12px);opacity:0;pointer-events:none;max-width:320px;width:max-content;
@@ -830,6 +830,7 @@ const PRODUCTS = [
 const BY_ID = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
 const PICKS = ['apple', 'bread', 'cheese'];   // «Подборка недели», как на экранах 3 и 4
 
+document.documentElement.lang = 'ru';
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 const u = (id, w, h, extra='') => `<svg width="${w}" height="${h}" ${extra} aria-hidden="true"><use href="#${id}"/></svg>`;
@@ -972,7 +973,7 @@ const screenEl = $('#screen');
 const VIEW_KEYS = Object.keys(VIEWS).filter(k => CFG.game || (k !== 'rules' && k !== 'game'));
 screenEl.innerHTML = VIEW_KEYS.map(k =>
   `<section class="view ${EXTRA[k] || ''}" id="v-${k}" aria-label="${TITLES[k]}">${VIEWS[k]()}</section>`).join('')
-  + `<div class="overlay">${statusBar}<div class="homebar"></div></div><div class="toast" id="toast" role="status" aria-live="polite"></div>`;
+  + `<div class="overlay" aria-hidden="true">${statusBar}<div class="homebar"></div></div><div class="toast" id="toast" role="status" aria-live="polite"></div>`;
 
 const game = $('#v-game'), garden = $('#garden'), waterBtn = $('#water');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -987,11 +988,12 @@ function place(el, x, z, animate) {
   el.style.transform = `translateX(${x}%)`;
   el.style.zIndex = z;
 }
-let navTimer;
+let navTimer, curView = null;
 function show(id, dir) {
-  const cur = $('.view.on'), nxt = $('#v-' + id);
+  const cur = curView, nxt = $('#v-' + id);
   nxt.classList.toggle('root', stack.length === 1);
   if (cur === nxt) return;
+  curView = nxt;
   clearTimeout(navTimer);
   $$('.view').forEach(v => { if (v !== cur && v !== nxt) { v.classList.remove('on'); place(v, 0, 0, false); } });
   nxt.classList.add('on');
@@ -1012,7 +1014,7 @@ function push(id) {
   if (at >= 0) { stack = stack.slice(0, at + 1); show(id, 'back'); return; }
   stack.push(id); show(id, 'fwd');
 }
-function back() { if (stack.length < 2) return; stack.pop(); show(stack[stack.length - 1], 'back'); }
+function back() { if (placing || stack.length < 2) return; stack.pop(); show(stack[stack.length - 1], 'back'); }
 function goRoot(id) { if (stack.length === 1 && stack[0] === id) return; stack = [id]; show(id, 'none'); }
 
 /* ---------- toast ---------- */
@@ -1031,10 +1033,17 @@ function paintCounters(bump) {
   $('#hbar').style.width = state.hv * 10 + '%';
   if (bump && !reduce) ['#chip', '.stats .lab'].forEach(s => { const e = $(s); e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump'); });
 }
-function setSpent(on) { if (!CFG.game) return; game.classList.toggle('spent', on); waterBtn.disabled = on || state.busy; }
+function setSpent(on) {
+  if (!CFG.game) return;
+  game.classList.toggle('spent', on);
+  const veil = game.querySelector('.veil'), modal = game.querySelector('.modal');
+  veil.inert = modal.inert = !on;
+  waterBtn.disabled = on;
+  if (on && (document.activeElement === waterBtn || document.activeElement === document.body)) modal.querySelector('button').focus({ preventScroll: true });
+}
 function water() {
   if (!CFG.game || state.busy || state.tr <= 0) return;
-  state.busy = true; waterBtn.disabled = true;
+  state.busy = true; waterBtn.setAttribute('aria-disabled', 'true');
   garden.classList.remove('harvest'); garden.classList.add('watering');
   const g = gen, t1 = reduce ? 0 : 700, t2 = reduce ? 0 : 1250;
   setTimeout(() => {
@@ -1046,8 +1055,8 @@ function water() {
     if (g !== gen) return;
     garden.classList.remove('watering');
     state.busy = false;
+    waterBtn.removeAttribute('aria-disabled');
     if (state.tr === 0) setTimeout(() => { if (g === gen) setSpent(true); }, reduce ? 0 : 300);
-    else waterBtn.disabled = false;
     setTimeout(() => { if (g === gen) garden.classList.remove('harvest'); }, 400);
   }, t2);
 }
@@ -1056,7 +1065,8 @@ function resetGame() {
   if (!CFG.game) return;
   state.hv = START.hv; state.tr = START.tr; state.busy = false;
   garden.classList.remove('watering', 'harvest');
-  paintCounters(false); setSpent(false); waterBtn.disabled = false;
+  waterBtn.removeAttribute('aria-disabled');
+  paintCounters(false); setSpent(false);
 }
 
 /* ---------- catalog, search, cart ---------- */
@@ -1130,14 +1140,16 @@ function renderCheckout() {
     <button type="button" class="btn wide" data-act="co-confirm" id="co-confirm">Подтвердить заказ</button>
     <p class="co-note">Оплата при получении. Заказ можно отменить в «Моих заказах», пока его не начали собирать.</p>`;
 }
+let placing = false;
 function confirmOrder(btn) {
-  if (btn.disabled) return;
-  btn.disabled = true; btn.textContent = 'Оформляем…';
+  if (placing || !cartCount()) return;
+  placing = true; btn.disabled = true; btn.textContent = 'Оформляем…';
+  const items = cartItems(), co = state.co;
+  const order = { no: 4821 + state.orders.length, items: items.map(({ p, q }) => [p.id, q]),
+    n: cartCount(), sum: items.reduce((a, { p, q }) => a + p.price * q, 0),
+    mode: co.mode, slot: SLOTS[co.mode][co.slot], pay: PAYS[co.pay] };
   setTimeout(() => {
-    const items = cartItems(), co = state.co;
-    const order = { no: 4821 + state.orders.length, items: items.map(({ p, q }) => [p.id, q]),
-      n: cartCount(), sum: items.reduce((a, { p, q }) => a + p.price * q, 0),
-      mode: co.mode, slot: SLOTS[co.mode][co.slot], pay: PAYS[co.pay] };
+    placing = false;
     state.orders.unshift(order);
     state.cart = {}; paintBadges(); renderCart();
     $('#done-body').innerHTML = `<div class="ok">${u('i-check',52,52)}</div>
@@ -1182,9 +1194,9 @@ const ACTIONS = {
   inc: el => addToCart(el.dataset.id, 1),
   dec: el => addToCart(el.dataset.id, -1),
   checkout: () => { state.co = { mode: 'delivery', slot: 0, pay: 0 }; renderCheckout(); $('#co-body').scrollTop = 0; push('checkout'); },
-  'co-mode': el => { state.co.mode = el.dataset.v; state.co.slot = 0; renderCheckout(); },
-  'co-slot': el => { state.co.slot = +el.dataset.v; renderCheckout(); },
-  'co-pay': el => { state.co.pay = +el.dataset.v; renderCheckout(); },
+  'co-mode': el => { if (placing) return; state.co.mode = el.dataset.v; state.co.slot = 0; renderCheckout(); },
+  'co-slot': el => { if (placing) return; state.co.slot = +el.dataset.v; renderCheckout(); },
+  'co-pay': el => { if (placing) return; state.co.pay = +el.dataset.v; renderCheckout(); },
   'co-confirm': el => confirmOrder(el),
   'my-orders': () => { renderOrders(); stack = ['profile', 'orders']; show('orders', 'fwd'); },
   search: () => openSearch(),
